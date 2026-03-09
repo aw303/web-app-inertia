@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Budget;
 use Carbon\Carbon;
 use Inertia\Inertia;
 use App\Models\Transaction;
@@ -53,6 +54,27 @@ class DashboardController extends Controller
             ]);
         }
 
+
+        // 3️⃣ Budgets for current month
+        $month = now()->format('Y-m');
+        $budgets = Budget::with('category')
+            ->where('user_id', $userId)
+            ->where('month', $month)
+            ->get();
+
+        $budgets->transform(function ($budget) use ($userId, $month) {
+            $spent = Transaction::where('user_id', $userId)
+                ->where('type', 'expense')
+                ->where('category_id', $budget->category_id)
+                ->where('date', 'like', $month . '%')
+                ->sum('amount');
+
+            $budget->spent = $spent;
+            $budget->progress = min(round(($spent / $budget->amount) * 100, 0), 100);
+
+            return $budget;
+        });
+
         $transactions = Transaction::where('user_id', $userId)
             ->latest()
             ->take(5)
@@ -63,6 +85,7 @@ class DashboardController extends Controller
         return Inertia::render('Dashboard', [
             'stats' => $stats,
             'transactions' => $transactions,
+            'budgets' => $budgets,
             'monthlyExpenses' => $monthlyData
         ]);
     }

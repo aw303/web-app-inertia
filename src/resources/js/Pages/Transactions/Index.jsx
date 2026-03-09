@@ -1,5 +1,5 @@
 import AppLayout from "@/Layouts/AppLayout";
-import { Link, router } from "@inertiajs/react";
+import {Head, Link, router} from "@inertiajs/react";
 
 export default function Index({ transactions }) {
 
@@ -12,6 +12,7 @@ export default function Index({ transactions }) {
     return (
         <AppLayout>
 
+            <Head title="Transactions" />
             <div className="flex justify-between mb-6">
 
                 <h1 className="text-2xl font-bold">

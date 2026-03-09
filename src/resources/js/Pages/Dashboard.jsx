@@ -1,11 +1,12 @@
 import AppLayout from "@/Layouts/AppLayout";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
+import {Head} from "@inertiajs/react";
 
-export default function Dashboard({ stats, transactions, monthlyData }) {
+export default function Dashboard({ stats, transactions, monthlyData , budgets}) {
 
     return (
         <AppLayout>
-
+            <Head title="Dashboard" />
             <h1 className="text-2xl font-bold mb-6">Dashboard</h1>
 
             {/* Stats Cards */}
@@ -59,6 +60,18 @@ export default function Dashboard({ stats, transactions, monthlyData }) {
                 </table>
             </div>
 
+            {/* Recent Budgets */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
+                {budgets.map((b) => (
+                    <div key={b.id} className="bg-white p-4 rounded shadow">
+                        <h3>{b.name}</h3>
+                        <p>${b.spent} spent of ${b.amount}</p>
+                        <div className="bg-gray-200 rounded h-2 mt-1">
+                            <div className="bg-green-500 h-2 rounded" style={{ width: `${b.progress}%` }} />
+                        </div>
+                    </div>
+                ))}
+            </div>
         </AppLayout>
     );
 }
